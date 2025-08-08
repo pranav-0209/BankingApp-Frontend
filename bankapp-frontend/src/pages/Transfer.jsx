@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import DepositForm from '../TransferFormComponents/DepositForm';
-import WithDrawForm from '../TransferFormComponents/WithDrawForm';
-import TransferForm from '../TransferFormComponents/TransferForm';
+import DepositForm from '../components/TransferFormComponents/DepositForm';
+import TransferForm from '../components/TransferFormComponents/TransferForm';
+import WithDrawForm from '../components/TransferFormComponents/WithDrawForm';
 
 const Transfer = () => {
 

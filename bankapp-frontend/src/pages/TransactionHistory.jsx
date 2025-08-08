@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from "react";
-import TransactionRow from '../TransactionHistory/TransactionRow';
+import TransactionRow from '../components/TransactionHist/TransactionRow';
+
 
 
 const sampleTransactions = [

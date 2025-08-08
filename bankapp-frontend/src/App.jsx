@@ -1,14 +1,17 @@
-import { useLocation, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import './App.css'
 import Sidebar from './components/Sidebar/Sidebar'
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
-import DashBoard from './components/MainComponent/DashBoard';
-import ManageAccount from './components/MainComponent/ManageAccount';
-import Transfer from "./components/MainComponent/Transfer";
-import TransactionHistory from "./components/MainComponent/TransactionHistory";
+import ManageAccount from './pages/ManageAccount';
+import Transfer from "./pages/Transfer";
+import DashBoard from "./pages/DashBoard";
+import TransactionHistory from "./pages/TransactionHistory";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
-function App() {
+
+function MainLayout() {
 
   const location = useLocation();
 
@@ -19,7 +22,7 @@ function App() {
   } else if (location.pathname === "/transfer") {
     variant = "transfer";
   }
-   else if (location.pathname === "/transactions") {
+  else if (location.pathname === "/transactions") {
     variant = "transactions";
   }
 
@@ -45,4 +48,18 @@ function App() {
   )
 }
 
-export default App
+export default function App() {
+  return (
+    
+      <Routes>
+        {/* Public routes: Login/Signup */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* Protected/main app routes */}
+        <Route path="/*" element={<MainLayout />} />
+      </Routes>
+    
+  );
+}
+

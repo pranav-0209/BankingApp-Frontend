@@ -2,7 +2,7 @@ import React from 'react'
 import TransactionRow from './TransactionRow';
 
 
-const TransactionHistory = () => {
+const DashboardTransactionHistory = () => {
 
     const transactions = [
         {
@@ -57,4 +57,4 @@ const TransactionHistory = () => {
     )
 }
 
-export default TransactionHistory
+export default DashboardTransactionHistory

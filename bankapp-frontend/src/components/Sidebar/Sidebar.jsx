@@ -19,17 +19,18 @@ const Sidebar = ({ current, onNavigate }) => {
             </div>
             {/* Nav Links */}
             <nav className="flex flex-col gap-5">
-                {navItems.map((item, idx) => (
+                {navItems.map((item) => (
                     <NavLink
                         key={item.label}
                         to={item.path}
+                        end={item.path === "/"}
                         className={({ isActive }) =>
                             `flex items-center gap-5 pl-13 pr-2 py-3 text-2xl font-medium rounded-l-lg cursor-pointer
         ${isActive
                                 ? 'bg-white text-[#2872c9] shadow-md'
                                 : 'text-[#476488] hover:bg-[#97c6ec] hover:text-[#2872c9]'}`
                         }
-                        end={item.path === '/'}
+                        
                     >
                         <span className="text-3xl">{item.icon}</span>
                         <span>{item.label}</span>

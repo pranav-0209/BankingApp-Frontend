@@ -1,14 +1,25 @@
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import api from '../api';
 
 const Signup = () => {
 
-  const [form, setForm] = useState({ fullName: '', email: '', phoneNumber: '', password: '' });
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({ name: '', email: '', phoneNumber: '', password: '' });
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-  const handleSubmit = e => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    // Handle signup logic
+    try {
+      await api.post('/auth/signup', form);
+      alert('Signup successful!');
+      navigate('/login');
+    } catch (error) {
+      alert(error.response?.data?.message || 'Signup failed!');
+    }
   };
+
 
   return (
     <div className="min-h-screen flex">
@@ -22,13 +33,13 @@ const Signup = () => {
         <div className="w-2xl flex flex-col justify-center p-12 m-auto bg-white">
           <h2 className="text-3xl font-semibold mb-2">Account Signup</h2>
           <p className="text-gray-500 mb-6">Join us for a seamless banking experience.</p>
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form className="space-y-5" onSubmit={handleSignup}>
             <div>
               <label className="block mb-1 text-sm font-medium">Full Name</label>
               <input
                 className="w-full border border-gray-300 rounded px-3 py-2"
-                name="fullName"
-                value={form.fullName}
+                name="name"
+                value={form.name}
                 onChange={handleChange}
                 required
               />

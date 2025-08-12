@@ -1,32 +1,30 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import TransactionRow from './TransactionRow';
+import api from "../../api";
 
 
 const DashboardTransactionHistory = () => {
 
-    const transactions = [
-        {
-            from: "100 000 001",
-            type: "Transfer",
-            to: "200 000 001",
-            amount: "-5000",
-            timestamp: "8/8/2025"
-        },
-        {
-            from: "100 000 001",
-            type: "Withdraw",
-            to: "",
-            amount: "-1500",
-            timestamp: "7/8/2025"
-        },
-        {
-            from: "100 000 001",
-            type: "Deposit",
-            to: "",
-            amount: "+1000",
-            timestamp: "6/8/2025"
-        }
-    ];
+    const [transactions, setTransactions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            try {
+                const response = await api.get('/transaction');
+                console.log("Transactions fetched:", response.data);
+                setTransactions(response.data);
+            } catch (error) {
+                setError("Failed to fetch transactions");
+                console.error("Error fetching transactions:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTransactions();
+    }, []);
+
 
     return (
         <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 pt-6 pb-8 shadow-sm mx-auto">

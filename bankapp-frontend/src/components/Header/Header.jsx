@@ -2,10 +2,27 @@ import React from 'react'
 import { useNavigate } from "react-router-dom";
 import { HiBell } from 'react-icons/hi';
 import { HiArrowLeft } from "react-icons/hi";
+import { useAuth } from '../../auth/AuthContext';
 
 const Header = ({ variant = "default", title = "" }) => {
-
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Helper function to get user initials
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map(word => word[0])
+      .join("")
+      .toUpperCase();
+  };
+
+  // Get user's first name for greeting
+  const getFirstName = (fullName) => {
+    if (!fullName) return "User";
+    return fullName.split(" ")[0];
+  };
 
   if (variant === "manageAccounts" || variant === "transfer" || variant === "transactions") {
     return (
@@ -45,7 +62,7 @@ const Header = ({ variant = "default", title = "" }) => {
           Welcome back,
         </div>
         <div className="text-lg text-[#2872c9] font-medium">
-          John Doe
+          {user?.name || "Guest"}
         </div>
       </div>
 
@@ -59,7 +76,7 @@ const Header = ({ variant = "default", title = "" }) => {
         </button>
         {/* User Avatar */}
         <div className="h-12 w-12 bg-[#c1e0ff] rounded-full flex items-center justify-center border-2 border-white shadow">
-          <span className="text-[#263d6b] text-xl font-bold">JD</span>
+          <span className="text-[#263d6b] text-xl font-bold">{getInitials(user?.name)}</span>
           {/* Replace above with an <img /> if you have a profile pic */}
         </div>
       </div>

@@ -9,6 +9,9 @@ import DashBoard from "./pages/DashBoard";
 import TransactionHistory from "./pages/TransactionHistory";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import { useAuth, AuthProvider } from './auth/AuthContext'
+import { PrivateRoute } from "./routes/guards"
+import { Outlet } from "react-router-dom";
 
 
 function MainLayout() {
@@ -29,17 +32,12 @@ function MainLayout() {
   return (
     <>
       <div className="flex min-h-screen bg-[#F0F4F7]"> {/* Flexbox, row by default */}
+
         <Sidebar />
         <div className="flex flex-col flex-1">
           <Header variant={variant} />
           <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<DashBoard />} />
-              <Route path="/accounts" element={<ManageAccount />} />
-              <Route path="/transfer" element={<Transfer />} />
-              <Route path="/transactions" element={<TransactionHistory />} />
-              {/* ...other routes... */}
-            </Routes>
+            <Outlet />
           </main>
           <Footer />
         </div>
@@ -48,18 +46,28 @@ function MainLayout() {
   )
 }
 
+const AppRoutes = () => (
+  <Routes>
+    {/* Public routes */}
+    <Route path="/login" element={<Login />} />
+    <Route path="/signup" element={<Signup />} />
+
+    {/* Protected app routes */}
+    <Route element={<PrivateRoute />}>
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<DashBoard />} />
+        <Route path="/accounts" element={<ManageAccount />} />
+        <Route path="/transfer" element={<Transfer />} />
+        <Route path="/transactions" element={<TransactionHistory />} />
+      </Route>
+    </Route>
+  </Routes>
+);
+
+
 export default function App() {
   return (
-    
-      <Routes>
-        {/* Public routes: Login/Signup */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-
-        {/* Protected/main app routes */}
-        <Route path="/*" element={<MainLayout />} />
-      </Routes>
-    
+    <AppRoutes />
   );
 }
 

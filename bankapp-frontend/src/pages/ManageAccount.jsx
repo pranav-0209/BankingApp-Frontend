@@ -1,23 +1,35 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import AddAccountModal from '../components/AddAccountModal';
+import api from '../api';
 
 const ManageAccount = () => {
+    const [accounts, setAccounts] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const accounts = [
-        {
-            id: 1,
-            type: "Savings",
-            number: "100 000 001",
-            balance: 50000,
-            createdAt: "2024-06-22T14:45:00Z"
-        },
-        {
-            id: 2,
-            type: "Current",
-            number: "200 000 001",
-            balance: 150000,
-            createdAt: "2024-07-11T10:13:00Z"
+    const fetchAccounts = async () => {
+        try {
+            const response = await api.get('/account');
+            setAccounts(response.data);
+        } catch (error) {
+            console.error("Failed to fetch accounts:", error);
         }
-    ];
+    };
+
+    useEffect(() => {
+        fetchAccounts();
+    }, []);
+
+    const handleAddAccount = async (accountData) => {
+        try {
+            await api.post('/account', accountData);
+            fetchAccounts(); // Refresh the accounts list
+            setIsModalOpen(false); // Close the modal
+        } catch (error) {
+            console.error("Failed to add account:", error);
+            // You could add some user-facing error handling here
+        }
+    };
+
 
     return (
         <div>
@@ -46,14 +58,13 @@ const ManageAccount = () => {
                         </thead>
                         <tbody>
                             {accounts.map(acc => (
-                                <tr key={acc.id} className="hover:bg-gray-100 transition">
-                                    <td className="py-3 px-3">{acc.type}</td>
-                                    <td className="py-3 px-3">{acc.number}</td>
+                                <tr key={acc.accountNumber} className="hover:bg-gray-100 transition">
+                                    <td className="py-3 px-3">{acc.accountType}</td>
+                                    <td className="py-3 px-3">{acc.accountNumber}</td>
                                     <td className="py-3 px-3 font-semibold text-[#2872c9]">
                                         ₹{Number(acc.balance).toLocaleString()}
                                     </td>
                                     <td className="py-3 px-4">
-                                        {/* Format date as DD/MM/YYYY */}
                                         {new Date(acc.createdAt).toLocaleDateString()}
                                     </td>
                                     <td className="py-3 px-3 flex gap-2">
@@ -68,13 +79,23 @@ const ManageAccount = () => {
 
                 {/* Add Account Button */}
                 <div className="mt-6 text-right">
-                    <button className="inline-block bg-[#2872c9] text-white px-5 py-2 rounded-lg shadow hover:bg-[#1a4f7d] transition text-sm font-medium">
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="inline-block bg-[#2872c9] text-white px-5 py-2 rounded-lg shadow hover:bg-[#1a4f7d] transition text-sm font-medium"
+                    >
                         + Add New Account
                     </button>
                 </div>
             </div>
+
+            {isModalOpen && (
+                <AddAccountModal
+                    onClose={() => setIsModalOpen(false)}
+                    onSubmit={handleAddAccount}
+                />
+            )}
         </div>
     )
 }
 
-export default ManageAccount
+export default ManageAccount;

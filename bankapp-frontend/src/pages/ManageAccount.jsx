@@ -30,6 +30,22 @@ const ManageAccount = () => {
         }
     };
 
+    const handleDeleteAccount = async (accountNumber) => {
+        // Show a confirmation dialog before proceeding
+        const isConfirmed = window.confirm("Are you sure you want to delete this account? This action cannot be undone.");
+
+        if (isConfirmed) {
+            try {
+                await api.delete(`/account/${accountNumber}`);
+                // After successful deletion, refresh the list of accounts
+                fetchAccounts();
+            } catch (error) {
+                console.error(`Failed to delete account ${accountNumber}:`, error);
+                // Optionally, show an error message to the user
+                alert("Failed to delete account. Please try again.");
+            }
+        }
+    };
 
     return (
         <div>
@@ -69,7 +85,7 @@ const ManageAccount = () => {
                                     </td>
                                     <td className="py-3 px-3 flex gap-2">
                                         <button className="text-blue-500 hover:underline text-base">Edit</button>
-                                        <button className="text-red-500 hover:underline text-base">Delete</button>
+                                        <button  onClick={() => handleDeleteAccount(acc.accountNumber)} className="text-red-500 hover:underline text-base">Delete</button>
                                     </td>
                                 </tr>
                             ))}
@@ -83,7 +99,7 @@ const ManageAccount = () => {
                         onClick={() => setIsModalOpen(true)}
                         className="inline-block bg-[#2872c9] text-white px-5 py-2 rounded-lg shadow hover:bg-[#1a4f7d] transition text-sm font-medium"
                     >
-                        + Add New Account
+                        Add New Account
                     </button>
                 </div>
             </div>

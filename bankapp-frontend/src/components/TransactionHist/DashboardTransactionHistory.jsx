@@ -27,7 +27,7 @@ const DashboardTransactionHistory = () => {
 
 
     return (
-        <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 pt-6 pb-8 shadow-sm mx-auto">
+        <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 pt-5 pb-3 shadow-sm mx-auto">
             {/* Section Title */}
             <div className="mb-4 text-2xl font-semibold text-[#263d6b] tracking-wide">
                 Transactions History
@@ -45,9 +45,10 @@ const DashboardTransactionHistory = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {transactions.map((txn, idx) => (
-                            <TransactionRow key={idx} {...txn} />
+                        {transactions.slice(0, 4).map((txn) => (
+                            <TransactionRow key={txn.id} {...txn} />
                         ))}
+
                     </tbody>
                 </table>
             </div>

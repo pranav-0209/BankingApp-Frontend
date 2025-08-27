@@ -1,64 +1,35 @@
-import React from 'react'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TransactionRow from '../components/TransactionHist/TransactionRow';
-
-
-
-const sampleTransactions = [
-    {
-        from: "100 000 001",
-        type: "Transfer",
-        to: "200 000 001",
-        amount: "-5000",
-        timestamp: "8/8/2025"
-    },
-    {
-        from: "100 000 001",
-        type: "Deposit",
-        to: "",
-        amount: "+1000",
-        timestamp: "6/8/2025"
-    },
-    {
-        from: "100 000 001",
-        type: "Transfer",
-        to: "200 000 001",
-        amount: "-5000",
-        timestamp: "8/8/2025"
-    },
-    {
-        from: "100 000 001",
-        type: "Withdraw",
-        to: "",
-        amount: "-1500",
-        timestamp: "7/8/2025"
-    },
-    {
-        from: "100 000 001",
-        type: "Deposit",
-        to: "",
-        amount: "+1000",
-        timestamp: "6/8/2025"
-    }
-];
-
-
+import api from '../api'; 
 const TransactionHistory = () => {
 
-    const [selectedAccount, setSelectedAccount] = useState("");
+    const [transactions, setTransactions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [search, setSearch] = useState("");
 
-    // You can actually filter transactions by `selectedAccount` or `search`
-    // Here, we'll show all as demo
-    const filteredTransactions = sampleTransactions.filter(
-        tx =>
-            (!search ||
-                tx.from.includes(search) ||
-                tx.to.includes(search) ||
-                tx.type.toLowerCase().includes(search.toLowerCase()) ||
-                tx.amount.includes(search)
-            ) &&
-            (!selectedAccount || tx.from === selectedAccount)
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            try {
+                const response = await api.get('/transaction');
+                setTransactions(response.data);
+            } catch (err) {
+                setError("Failed to fetch transaction history.");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTransactions();
+    }, []);
+
+    // Filter transactions based on the search input
+    const filteredTransactions = transactions.filter(tx =>
+        (tx.fromAccount && tx.fromAccount.includes(search)) ||
+        (tx.toAccount && tx.toAccount.includes(search)) ||
+        tx.transactionType.toLowerCase().includes(search.toLowerCase()) ||
+        String(tx.amount).includes(search)
     );
 
     return (
@@ -73,15 +44,6 @@ const TransactionHistory = () => {
 
                 {/* Select Account and Search */}
                 <div className="flex flex-col md:flex-row gap-3 mb-5">
-                    <select
-                        value={selectedAccount}
-                        onChange={e => setSelectedAccount(e.target.value)}
-                        className="border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring w-full md:w-1/4"
-                    >
-                        <option value="">Select account</option>
-                        <option value="100 000 001">100 000 001</option>
-                        <option value="200 000 001">200 000 001</option>
-                    </select>
                     <input
                         type="text"
                         className="border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring w-full md:ml-3"
@@ -104,15 +66,23 @@ const TransactionHistory = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredTransactions.length === 0 ? (
+                            {loading ? (
                                 <tr>
-                                    <td colSpan={5} className="text-center py-6 text-gray-400">
+                                    <td colSpan="5" className="text-center py-6 text-gray-500">Loading...</td>
+                                </tr>
+                            ) : error ? (
+                                <tr>
+                                    <td colSpan="5" className="text-center py-6 text-red-500">{error}</td>
+                                </tr>
+                            ) : filteredTransactions.length === 0 ? (
+                                <tr>
+                                    <td colSpan="5" className="text-center py-6 text-gray-400">
                                         No transactions found.
                                     </td>
                                 </tr>
                             ) : (
-                                filteredTransactions.map((txn, idx) => (
-                                    <TransactionRow key={idx} {...txn} />
+                                filteredTransactions.map((txn) => (
+                                    <TransactionRow key={txn.id} {...txn} />
                                 ))
                             )}
                         </tbody>

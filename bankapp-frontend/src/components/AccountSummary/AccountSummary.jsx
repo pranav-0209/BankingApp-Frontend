@@ -12,8 +12,10 @@ const AccountSummary = () => {
             try {
                 const response = await api.get('/account');
                 if (response.data) {
-                    console.log("Accounts fetched:", response.data);
-                    setAccounts(response.data);
+                   const sortedAccounts = response.data.sort((a, b) =>
+                        new Date(b.createdAt) - new Date(a.createdAt)
+                    );
+                    setAccounts(sortedAccounts);
                 }
             } catch (error) {
                 console.error("Error fetching accounts:", error);
@@ -50,20 +52,20 @@ const AccountSummary = () => {
 
     return (
         <>
-            <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 pt-3 pb-6 mb-5 shadow-sm mx-auto">
+            <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 pt-3 pb-5 mb-3 shadow-sm mx-auto">
                 {/* Title */}
                 <div className="mb-3 text-2xl font-semibold text-[#263d6b] tracking-wide">
                     Accounts
                 </div>
                 {/* Cards Row */}
                 <div className="flex gap-25">
-                    {accounts.map((account) => (
+                     {accounts.slice(0, 2).map((account) => (
                         <AccountCard
                             key={account.accountNumber}
                             type={account.accountType}
                             accountNumber={account.accountNumber}
                             balance={account.balance}
-                            bgColor={account.accountType === 'CURRENT' ? '#4F709C' : '#213555'} // Example dynamic color
+                            bgColor={account.accountType === 'CURRENT' ? '#4F709C' : '#213555'}
                             textColor="#F1EFEF"
                         />
                     ))}

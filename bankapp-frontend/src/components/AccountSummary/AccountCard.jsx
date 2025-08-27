@@ -3,7 +3,7 @@ import { HiCreditCard } from 'react-icons/hi';
 
 const AccountCard = ({ type, accountNumber, balance, bgColor, textColor }) => {
   return (
-    <div className={`flex-1  min-w-[200px] rounded-lg ml-5 mr-5 px-9 py-6 flex flex-col justify-between ${bgColor}`} style={{ color: textColor }}>
+    <div className="flex-1  min-w-[200px] rounded-lg ml-5 mr-5 px-9 py-6 flex flex-col justify-between" style={{ backgroundColor: bgColor, color: textColor }}>
       <div>
         <div className="text-base font-semibold mb-1 uppercase opacity-90">{type} ACCOUNT</div>
         <div className="text-xs opacity-80 mb-1">Account Number</div>

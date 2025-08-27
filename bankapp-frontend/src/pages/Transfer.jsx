@@ -1,11 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DepositForm from '../components/TransferFormComponents/DepositForm';
 import TransferForm from '../components/TransferFormComponents/TransferForm';
 import WithDrawForm from '../components/TransferFormComponents/WithDrawForm';
+import api from '../api'
 
 const Transfer = () => {
 
     const [activeTab, setActiveTab] = useState('deposit');
+    const [accounts, setAccounts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+     useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const response = await api.get('/account');
+                setAccounts(response.data);
+                console.log("Accounts fetched:", response.data);
+            } catch (err) {
+                setError('Failed to fetch accounts. Please try again later.');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchAccounts();
+    }, []);
+
+     const refreshBalance = async (accountNumber) => {
+        try {
+            const response = await api.get(`/account/balance/${accountNumber}`);
+            const newBalance = response.data;
+            setAccounts(prevAccounts =>
+                prevAccounts.map(acc =>
+                    acc.accountNumber === accountNumber ? { ...acc, balance: newBalance } : acc
+                )
+            );
+        } catch (error) {
+            console.error("Could not refresh balance:", error);
+        }
+    };
 
     return (
         <div>
@@ -49,14 +83,15 @@ const Transfer = () => {
                 </div>
 
                 {/* Conditional Forms */}
-                {activeTab === 'deposit' && (
-                    <DepositForm />
-                )}
-                {activeTab === 'withdraw' && (
-                    <WithDrawForm />
-                )}
-                {activeTab === 'transfer' && (
-                    <TransferForm />
+                 {loading && <p>Loading accounts...</p>}
+                {error && <p className="text-red-500">{error}</p>}
+                
+                {!loading && !error && (
+                    <>
+                        {activeTab === 'deposit' && <DepositForm accounts={accounts} onTransactionSuccess={refreshBalance} />}
+                        {activeTab === 'withdraw' && <WithdrawForm accounts={accounts} onTransactionSuccess={refreshBalance} />}
+                        {activeTab === 'transfer' && <TransferForm accounts={accounts} onTransactionSuccess={refreshBalance} />}
+                    </>
                 )}
             </div>
         </div>

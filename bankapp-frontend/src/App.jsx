@@ -7,6 +7,7 @@ import ManageAccount from './pages/ManageAccount';
 import Transfer from "./pages/Transfer";
 import DashBoard from "./pages/DashBoard";
 import TransactionHistory from "./pages/TransactionHistory";
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { useAuth, AuthProvider } from './auth/AuthContext'
@@ -49,13 +50,14 @@ function MainLayout() {
 const AppRoutes = () => (
   <Routes>
     {/* Public routes */}
+    <Route path="/" element={<LandingPage />} />
     <Route path="/login" element={<Login />} />
     <Route path="/signup" element={<Signup />} />
 
     {/* Protected app routes */}
     <Route element={<PrivateRoute />}>
       <Route element={<MainLayout />}>
-        <Route path="/" element={<DashBoard />} />
+        <Route path="/dashboard" element={<DashBoard />} />
         <Route path="/accounts" element={<ManageAccount />} />
         <Route path="/transfer" element={<Transfer />} />
         <Route path="/transactions" element={<TransactionHistory />} />

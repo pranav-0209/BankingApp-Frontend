@@ -4,7 +4,7 @@ import { useAuth } from '../../auth/AuthContext';
 
 
 const navItems = [
-    { label: 'Home', icon: <HiHome />, path: '/' },
+    { label: 'Home', icon: <HiHome />, path: '/dashboard' },
     { label: 'Account', icon: <HiUser />, path: '/accounts' },
     { label: 'Transfer', icon: <HiRefresh />, path: '/transfer' },
     { label: 'Transaction', icon: <HiMenuAlt2 />, path: '/transactions' },
@@ -20,10 +20,10 @@ const Sidebar = ({ current, onNavigate }) => {
         navigate('/login'); // Redirect to login page after logout
     };
     return (
-        <aside className="bg-[#c1e0ff] w-75 min-h-screen flex flex-col border-r border-gray-200">
+        <aside className="bg-[#99CCFF] w-75 min-h-screen flex flex-col border-r border-gray-200">
             {/* Bank Name */}
-            <div className="text-[2.5rem] font-bold text-[#263d6b] pt-10 pl-14 pb-22">
-                AuraBank
+            <div className="pt-15 pb-20 flex justify-center">
+                <img src="/images/aurabank-logo.png" alt="AuraBank Logo" className="w-58" />
             </div>
             {/* Nav Links */}
             <nav className="flex flex-col gap-5">

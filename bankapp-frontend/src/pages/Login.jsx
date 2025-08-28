@@ -45,7 +45,7 @@ const Login = () => {
             api.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
             
             // Immediate navigation to dashboard
-            navigate('/', { replace: true });
+            navigate('/dashboard', { replace: true });
             
         } catch (error) {
             setError(error.response?.data?.message || "Login failed");

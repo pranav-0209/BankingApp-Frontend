@@ -21,10 +21,11 @@ const DepositForm = ({ accounts, onTransactionSuccess }) => {
         try {
             await api.post('/transaction/deposit', {
                 account: selectedAccount,
-                amount: parseFloat(amount),
-                transactionType: 'DEPOSIT'
+                transactionType: 'DEPOSIT',
+                amount: parseFloat(amount)
+                
             });
-            setMessage({ type: 'success', text: 'Deposit successful!' });
+            alert('Deposit successful!');
             onTransactionSuccess(selectedAccount); // Refresh balance in parent
             setAmount(''); // Reset amount
         } catch (error) {
@@ -34,7 +35,7 @@ const DepositForm = ({ accounts, onTransactionSuccess }) => {
         }
     }
         return (
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                     <label className="block font-semibold mb-1">Deposit To:</label>
                     <select className="w-full border rounded p-2"

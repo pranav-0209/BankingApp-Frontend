@@ -30,7 +30,7 @@ const Header = ({ variant = "default", title = "" }) => {
         {/* Back Button + Title */}
         <div className="flex items-center gap-4">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/dashboard")}
             className="flex items-center gap-1 pl-1.5 pr-2 py-0.5 outline-2 rounded-l-lg outline-offset-0  text-white font-thin bg-[#263d6b] hover:bg-[#2872c9] cursor-pointer"
           >
             <HiArrowLeft className="text-xl" />
@@ -46,7 +46,7 @@ const Header = ({ variant = "default", title = "" }) => {
           </button>
           {/* User Avatar */}
           <div className="h-12 w-12 bg-[#c1e0ff] rounded-full flex items-center justify-center border-2 border-white shadow">
-            <span className="text-[#263d6b] text-xl font-bold">JD</span>
+            <span className="text-[#263d6b] text-xl font-bold">{getInitials(user?.name)}</span>
             {/* Replace above with an <img /> if you have a profile pic */}
           </div>
         </div>
@@ -55,7 +55,7 @@ const Header = ({ variant = "default", title = "" }) => {
   }
 
   return (
-    <header className="flex items-center justify-between px-10 py-4 bg-white rounded-b-lg shadow-sm mb-3">
+    <header className="flex items-center justify-between px-10 py-3.5 bg-white rounded-b-lg shadow-sm mb-3">
       {/* Greeting */}
       <div>
         <div className="text-2xl font-semibold text-[#263d6b]">

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
+import WithdrawForm from '../components/TransferFormComponents/WithDrawForm';   
 import DepositForm from '../components/TransferFormComponents/DepositForm';
 import TransferForm from '../components/TransferFormComponents/TransferForm';
-import WithDrawForm from '../components/TransferFormComponents/WithDrawForm';
 import api from '../api'
 
 const Transfer = () => {

@@ -38,7 +38,7 @@ const TransactionHistory = () => {
                 <span className='text-3xl font-semibold'>Transaction History</span>
                 <p className='text-xl mt-2.5 mb-3'>All your recent account activity.</p>
             </div>
-            <div className="w-full max-w-[1010px] mx-auto bg-white border border-gray-200 rounded-xl p-6 shadow">
+            <div className="w-full max-w-[1010px] mx-auto mb-6 bg-white border border-gray-200 rounded-xl p-6 shadow">
                 {/* Title */}
                 <div className="mb-5 text-2xl font-semibold text-[#263d6b]">Transaction History</div>
 

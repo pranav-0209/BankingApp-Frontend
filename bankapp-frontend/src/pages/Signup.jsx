@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from '../api';
+import { TextField, Button, Stack } from '@mui/material'; // 👈 Import MUI components
 
 const Signup = () => {
-
   const navigate = useNavigate();
-
   const [form, setForm] = useState({ name: '', email: '', phoneNumber: '', password: '' });
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
@@ -20,7 +20,6 @@ const Signup = () => {
     }
   };
 
-
   return (
     <div className="min-h-screen flex">
       {/* Left Image Block */}
@@ -29,69 +28,63 @@ const Signup = () => {
       </div>
 
       <div className='m-auto'>
-        <button className="text-sm text-[#476488] hover:underline text-left">← Back</button>
+        <Link to="/" className="mb-8 text-sm text-[#476488] hover:underline text-left">← Back</Link>
         <div className="w-2xl flex flex-col justify-center p-12 m-auto bg-white">
           <h2 className="text-3xl font-semibold mb-2">Account Signup</h2>
           <p className="text-gray-500 mb-6">Join us for a seamless banking experience.</p>
-          <form className="space-y-5" onSubmit={handleSignup}>
-            <div>
-              <label className="block mb-1 text-sm font-medium">Full Name</label>
-              <input
-                className="w-full border border-gray-300 rounded px-3 py-2"
+          <form onSubmit={handleSignup}>
+            <Stack spacing={2}> {/* 👈 Use Stack for spacing */}
+              <TextField
+                label="Full Name"
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 required
+                fullWidth
               />
-            </div>
-            <div>
-              <label className="block mb-1 text-sm font-medium">Email</label>
-              <input
-                className="w-full border border-gray-300 rounded px-3 py-2"
+              <TextField
+                label="Email"
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
                 required
+                fullWidth
               />
-            </div>
-            <div>
-              <label className="block mb-1 text-sm font-medium">Phone Number</label>
-              <input
-                className="w-full border border-gray-300 rounded px-3 py-2"
+              <TextField
+                label="Phone Number"
                 name="phoneNumber"
                 value={form.phoneNumber}
                 onChange={handleChange}
                 required
+                fullWidth
               />
-            </div>
-            <div>
-              <label className="block mb-1 text-sm font-medium">Password</label>
-              <input
-                className="w-full border border-gray-300 rounded px-3 py-2"
+              <TextField
+                label="Password"
                 type="password"
                 name="password"
                 value={form.password}
                 onChange={handleChange}
                 required
+                fullWidth
               />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-[#083b70] text-white py-2 rounded font-semibold mt-4 hover:bg-[#1653a2] transition"
-            >
-              Sign up
-            </button>
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                fullWidth
+              >
+                Sign up
+              </Button>
+            </Stack>
           </form>
           <div className="mt-4 text-sm">
             Already have an account? <a href="/login" className="text-[#2872c9] hover:underline">Login here</a>
           </div>
         </div>
       </div>
-      {/* Right Form Block */}
-
     </div>
-  )
+  );
 }
 
-export default Signup
+export default Signup;

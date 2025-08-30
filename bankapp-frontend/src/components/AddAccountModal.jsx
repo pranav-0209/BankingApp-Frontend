@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from '@mui/material';
 
 const AddAccountModal = ({ onClose, onSubmit }) => {
     const [accountType, setAccountType] = useState('SAVINGS');
@@ -56,22 +57,24 @@ const AddAccountModal = ({ onClose, onSubmit }) => {
                             placeholder="Minimum balance Rs.1000 is required" // Updated placeholder
                             required
                         />
-                         {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+                        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
                     </div>
-                    <div className="flex justify-end gap-4">
-                        <button
-                            type="button"
+                    <div className="flex justify-end gap-4 mt-6"> {/* 👈 Added mt-6 for spacing */}
+                        {/* Cancel Button */}
+                        <Button
+                            variant="outlined" // 👈 Use outlined style for secondary action
                             onClick={onClose}
-                            className="px-5 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition font-medium"
                         >
                             Cancel
-                        </button>
-                        <button
+                        </Button>
+
+                        {/* Submit Button */}
+                        <Button
                             type="submit"
-                            className="px-5 py-2 rounded-lg bg-[#2872c9] text-white hover:bg-[#1a4f7d] transition font-medium"
+                            variant="contained" // 👈 Use contained style for primary action
                         >
                             Create Account
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

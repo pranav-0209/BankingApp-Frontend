@@ -52,13 +52,13 @@ const AccountSummary = () => {
 
     return (
         <>
-            <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 pt-3 pb-5 mb-3 shadow-sm mx-auto">
+            <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 pt-2 pb-5 mb-3 shadow-sm mx-auto">
                 {/* Title */}
-                <div className="mb-3 text-2xl font-semibold text-[#263d6b] tracking-wide">
+                <div className="mb-2 text-2xl font-semibold text-[#263d6b] tracking-wide">
                     Accounts
                 </div>
                 {/* Cards Row */}
-                <div className="flex gap-25">
+                <div className="flex justify-between">
                      {accounts.slice(0, 2).map((account) => (
                         <AccountCard
                             key={account.accountNumber}

@@ -48,22 +48,24 @@ function MainLayout() {
 }
 
 const AppRoutes = () => (
-  <Routes>
-    {/* Public routes */}
-    <Route path="/" element={<LandingPage />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/signup" element={<Signup />} />
+  <div id="main-container">
+    <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-    {/* Protected app routes */}
-    <Route element={<PrivateRoute />}>
-      <Route element={<MainLayout />}>
-        <Route path="/dashboard" element={<DashBoard />} />
-        <Route path="/accounts" element={<ManageAccount />} />
-        <Route path="/transfer" element={<Transfer />} />
-        <Route path="/transactions" element={<TransactionHistory />} />
+      {/* Protected app routes */}
+      <Route element={<PrivateRoute />}>
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<DashBoard />} />
+          <Route path="/accounts" element={<ManageAccount />} />
+          <Route path="/transfer" element={<Transfer />} />
+          <Route path="/transactions" element={<TransactionHistory />} />
+        </Route>
       </Route>
-    </Route>
-  </Routes>
+    </Routes>
+  </div>
 );
 
 

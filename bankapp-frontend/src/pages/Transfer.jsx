@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import WithdrawForm from '../components/TransferFormComponents/WithDrawForm';   
+import { Button, TextField } from '@mui/material';
+import WithdrawForm from '../components/TransferFormComponents/WithDrawForm';
 import DepositForm from '../components/TransferFormComponents/DepositForm';
 import TransferForm from '../components/TransferFormComponents/TransferForm';
 import api from '../api'
@@ -11,7 +12,7 @@ const Transfer = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-     useEffect(() => {
+    useEffect(() => {
         const fetchAccounts = async () => {
             try {
                 const response = await api.get('/account');
@@ -27,7 +28,7 @@ const Transfer = () => {
         fetchAccounts();
     }, []);
 
-     const refreshBalance = async (accountNumber) => {
+    const refreshBalance = async (accountNumber) => {
         try {
             const response = await api.get(`/account/balance/${accountNumber}`);
             const newBalance = response.data;
@@ -41,6 +42,12 @@ const Transfer = () => {
         }
     };
 
+    const buttonStyles = {
+        padding: '15px 0', // Increase vertical padding
+        fontSize: '1.2rem',  // Increase font size
+        fontWeight: '500'
+    };
+
     return (
         <div>
             <div className='px-18 py-5'>
@@ -50,42 +57,36 @@ const Transfer = () => {
             <div className="w-full max-w-4xl mx-auto bg-white border border-gray-200 rounded-xl px-15 py-5 shadow">
                 {/* Tabs */}
                 <div className="flex gap-8 mb-6">
-                    <button
-                        className={`flex-1 py-4 rounded-lg font-semibold text-lg transition
-            ${activeTab === 'deposit'
-                                ? 'bg-[#61a8e8] text-white shadow'
-                                : 'bg-[#c1e0ff] text-[#263d6b] hover:bg-[#9ec9ed]'}`
-                        }
+                    <Button
+                        variant={activeTab === 'deposit' ? 'contained' : 'outlined'}
                         onClick={() => setActiveTab('deposit')}
+                        fullWidth
+                        sx={buttonStyles} // 👈 Apply custom styles
                     >
                         Deposit
-                    </button>
-                    <button
-                        className={`flex-1 py-4 rounded-lg font-semibold text-lg transition
-            ${activeTab === 'withdraw'
-                                ? 'bg-[#61a8e8] text-white shadow'
-                                : 'bg-[#c1e0ff] text-[#263d6b] hover:bg-[#9ec9ed]'}`
-                        }
+                    </Button>
+                    <Button
+                        variant={activeTab === 'withdraw' ? 'contained' : 'outlined'}
                         onClick={() => setActiveTab('withdraw')}
+                        fullWidth
+                        sx={buttonStyles} // 👈 Apply custom styles
                     >
                         Withdraw
-                    </button>
-                    <button
-                        className={`flex-1 py-4 rounded-lg font-semibold text-lg transition
-            ${activeTab === 'transfer'
-                                ? 'bg-[#61a8e8] text-white shadow'
-                                : 'bg-[#c1e0ff] text-[#263d6b] hover:bg-[#9ec9ed]'}`
-                        }
+                    </Button>
+                    <Button
+                        variant={activeTab === 'transfer' ? 'contained' : 'outlined'}
                         onClick={() => setActiveTab('transfer')}
+                        fullWidth
+                        sx={buttonStyles} // 👈 Apply custom styles
                     >
                         Transfer
-                    </button>
+                    </Button>
                 </div>
 
                 {/* Conditional Forms */}
-                 {loading && <p>Loading accounts...</p>}
+                {loading && <p>Loading accounts...</p>}
                 {error && <p className="text-red-500">{error}</p>}
-                
+
                 {!loading && !error && (
                     <>
                         {activeTab === 'deposit' && <DepositForm accounts={accounts} onTransactionSuccess={refreshBalance} />}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../../api';
+import { Button, TextField, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
 const WithDrawForm = ({ accounts, onTransactionSuccess }) => {
     const [selectedAccount, setSelectedAccount] = useState(accounts[0]?.accountNumber || '');
@@ -64,13 +65,14 @@ const WithDrawForm = ({ accounts, onTransactionSuccess }) => {
                 </div>
             )}
 
-            <button 
+             <Button
                 type="submit"
+                variant="contained"
+                size="large" // 👈 Set the size
                 disabled={loading}
-                className="mt-4 bg-[#61a8e8] text-white font-semibold px-5 py-2 rounded hover:bg-[#2872c9] transition disabled:bg-gray-400"
             >
                 {loading ? 'Processing...' : 'Confirm Withdrawal'}
-            </button>
+            </Button>
         </form>
     )
 }

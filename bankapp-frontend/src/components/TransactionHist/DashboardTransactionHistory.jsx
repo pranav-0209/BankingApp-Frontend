@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TransactionRow from './TransactionRow';
 import api from "../../api";
+import { Link } from 'react-router-dom';
 
 
 const DashboardTransactionHistory = () => {
@@ -27,9 +28,9 @@ const DashboardTransactionHistory = () => {
 
 
     return (
-        <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 pt-5 pb-3 shadow-sm mx-auto">
+        <div className="w-full max-w-[1010px] bg-white border border-gray-300 mb-3 rounded-xl px-10 pt-3.5 pb-3 shadow-sm mx-auto">
             {/* Section Title */}
-            <div className="mb-4 text-2xl font-semibold text-[#263d6b] tracking-wide">
+            <div className="mb-3 text-2xl font-semibold text-[#263d6b] tracking-wide">
                 Transactions History
             </div>
             {/* Table */}
@@ -51,6 +52,14 @@ const DashboardTransactionHistory = () => {
 
                     </tbody>
                 </table>
+            </div>
+            <div className="text-right">
+                <Link
+                    to="/transactions"
+                    className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+                >
+                    See More
+                </Link>
             </div>
         </div>
     )

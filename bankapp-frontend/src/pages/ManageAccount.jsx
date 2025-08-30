@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import {
+    Table, TableBody, TableCell, TableContainer,
+    TableHead, TableRow, Paper, Button
+} from '@mui/material';
 import AddAccountModal from '../components/AddAccountModal';
 import api from '../api';
 
@@ -49,6 +53,9 @@ const ManageAccount = () => {
         }
     };
 
+    const headerCellStyles = { fontSize: '1.1rem', fontWeight: 'bold' };
+    const bodyCellStyles = { fontSize: '1rem' };
+
     return (
         <div>
             <div className='px-18 py-5'>
@@ -63,48 +70,51 @@ const ManageAccount = () => {
                 </div>
 
                 {/* Accounts Table */}
-                <div className="overflow-x-auto">
-                    <table className="min-w-full text-xl text-left">
-                        <thead>
-                            <tr className="text-gray-500 font-medium border-b">
-                                <th className="py-3 px-3">Type</th>
-                                <th className="py-3 px-3">Account Number</th>
-                                <th className="py-3 px-3">Balance</th>
-                                <th className="py-3 px-3">Created Date</th>
-                                <th className="py-3 px-3">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={headerCellStyles}>Type</TableCell>
+                                <TableCell sx={headerCellStyles}>Account Number</TableCell>
+                                <TableCell sx={headerCellStyles}>Balance</TableCell>
+                                <TableCell sx={headerCellStyles}>Created Date</TableCell>
+                                <TableCell sx={headerCellStyles}>Actions</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
                             {accounts.map(acc => (
-                                <tr key={acc.accountNumber} className="hover:bg-gray-100 transition">
-                                    <td className="py-3 px-3">{acc.accountType}</td>
-                                    <td className="py-3 px-3">{acc.accountNumber}</td>
-                                    <td className="py-3 px-3 font-semibold text-[#2872c9]">
+                                <TableRow key={acc.accountNumber}>
+                                    <TableCell sx={bodyCellStyles}>{acc.accountType}</TableCell>
+                                    <TableCell sx={bodyCellStyles}>{acc.accountNumber}</TableCell>
+                                    <TableCell sx={bodyCellStyles}>
                                         ₹{Number(acc.balance).toLocaleString()}
-                                    </td>
-                                    <td className="py-3 px-4">
+                                    </TableCell>
+                                    <TableCell sx={bodyCellStyles}>
                                         {new Date(acc.createdAt).toLocaleDateString()}
-                                    </td>
-                                    <td className="py-3 px-3 flex gap-2">
-                                        {/* <button className="text-blue-500 hover:underline text-base">Edit</button> */}
-                                        {/* <button  onClick={() => handleDeleteAccount(acc.accountNumber)} className="text-white mx-auto bg-red-400 cursor-pointer hover:bg-gradient-to-t from-red-400 via-red-500 to-red-600 transition-all duration-300 ease-in-out flex justify-center items-center">Delete</button> */}
-                                        <button class="relative border border-red-600 group  py-0.5 px-2.5 text-red-600">
-                                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full group-hover:transition-all"></span>Delete </button>
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                    <TableCell sx={bodyCellStyles}>
+                                        <Button
+                                            variant="outlined"
+                                            color="error"
+                                            onClick={() => handleDeleteAccount(acc.accountNumber)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
                             ))}
-                        </tbody>
-                    </table>
-                </div>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
                 {/* Add Account Button */}
-                <div className="mt-6 mr-4 text-right">
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="inline-block bg-[#2872c9] text-white px-5 py-2 rounded-lg shadow hover:bg-[#1a4f7d] transition text-sm font-medium"
+                <div className="mt-6 mr-6 text-right">
+                    <Button
+                        variant="contained" onClick={() => setIsModalOpen(true)}
+
                     >
                         Add New Account
-                    </button>
+                    </Button>
                 </div>
             </div>
 

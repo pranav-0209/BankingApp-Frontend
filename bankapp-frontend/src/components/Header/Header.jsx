@@ -31,7 +31,7 @@ const Header = ({ variant = "default", title = "" }) => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-1 pl-1.5 pr-2 py-0.5 outline-2 rounded-l-lg outline-offset-0  text-white font-thin bg-[#263d6b] hover:bg-[#2872c9] cursor-pointer"
+            className="flex items-center gap-1 pl-1.5 pr-2 py-0.5 outline-2 rounded-l-lg outline-offset-0  text-white font-thin bg-[#2872c9] hover:bg-[#2872c9] cursor-pointer"
           >
             <HiArrowLeft className="text-xl" />
             <span className='text-xl pb-0.5'>Back</span>
@@ -45,7 +45,7 @@ const Header = ({ variant = "default", title = "" }) => {
             <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border-2 border-white" />
           </button>
           {/* User Avatar */}
-          <div className="h-12 w-12 bg-[#c1e0ff] rounded-full flex items-center justify-center border-2 border-white shadow">
+          <div className="h-12 w-12 bg-[#99CCFF] rounded-full flex items-center justify-center border-2 border-white shadow">
             <span className="text-[#263d6b] text-xl font-bold">{getInitials(user?.name)}</span>
             {/* Replace above with an <img /> if you have a profile pic */}
           </div>
@@ -55,7 +55,7 @@ const Header = ({ variant = "default", title = "" }) => {
   }
 
   return (
-    <header className="flex items-center justify-between px-10 py-3.5 bg-white rounded-b-lg shadow-sm mb-3">
+    <header className="flex items-center justify-between px-10 py-3 bg-white rounded-b-lg shadow-sm mb-3">
       {/* Greeting */}
       <div>
         <div className="text-2xl font-semibold text-[#263d6b]">

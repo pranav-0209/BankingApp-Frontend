@@ -5,10 +5,13 @@ import {
 } from '@mui/material';
 import AddAccountModal from '../components/AddAccountModal';
 import api from '../api';
+import SuccessModal from '../components/SuccessModal';
 
 const ManageAccount = () => {
     const [accounts, setAccounts] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
     const fetchAccounts = async () => {
         try {

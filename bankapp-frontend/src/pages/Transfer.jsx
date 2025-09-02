@@ -50,7 +50,7 @@ const Transfer = () => {
 
     return (
         <div>
-            <div className='px-18 py-5'>
+            <div className='px-18 pt-2 pb-4'>
                 <span className='text-3xl font-semibold'>Transfer</span>
                 <p className='text-xl mt-2.5 mb-3'>Deposit, withdraw, or transfer funds.</p>
             </div>

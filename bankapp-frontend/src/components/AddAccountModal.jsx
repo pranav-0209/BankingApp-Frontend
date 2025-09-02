@@ -1,79 +1,74 @@
 import React, { useState } from 'react';
+import api from '../api';
 import { Button } from '@mui/material';
+import SuccessModal from './SuccessModal'; // Import the modal
 
-const AddAccountModal = ({ onClose, onSubmit }) => {
+const AddAccountModal = ({ onClose, onAccountAdded }) => {
     const [accountType, setAccountType] = useState('SAVINGS');
-    const [balance, setBalance] = useState('');
-    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState(null);
+    const [showSuccessModal, setShowSuccessModal] = useState(false); // State for the modal
 
-    const handleBalanceChange = (e) => {
-        const value = e.target.value;
-        // Allow only numbers to be entered
-        if (/^\d*$/.test(value)) {
-            setBalance(value);
-            // Clear error when user starts typing a valid number
-            if (error) {
-                setError('');
-            }
-        }
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const finalBalance = parseFloat(balance);
+        setLoading(true);
+        setMessage(null);
 
-        // Validation check
-        if (isNaN(finalBalance) || finalBalance < 1000) {
-            setError("Minimum balance of Rs. 1000 is required.");
-            return;
+        try {
+            await api.post('/account/create', { accountType });
+            onAccountAdded(); // Refresh the account list in the parent component
+            setShowSuccessModal(true); // Show the modal on success
+        } catch (error) {
+            setMessage({ type: 'error', text: error.response?.data?.message || 'Failed to create account.' });
+        } finally {
+            setLoading(false);
         }
-
-        onSubmit({ accountType, balance: finalBalance });
     };
+
+    const handleCloseModal = () => {
+        setShowSuccessModal(false);
+        onClose(); // Also close the create account modal
+    };
+
+    // If success modal is shown, don't render the form
+    if (showSuccessModal) {
+        return (
+            <SuccessModal
+                message="New account created successfully!"
+                onClose={handleCloseModal}
+            />
+        );
+    }
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-                <h2 className="text-2xl font-semibold mb-6 text-[#263d6b]">Add New Account</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 font-medium mb-2">Account Type</label>
+                <h2 className="text-2xl font-bold mb-6">Add New Account</h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block font-semibold mb-1">Account Type:</label>
                         <select
                             value={accountType}
                             onChange={(e) => setAccountType(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[#61a8e8]"
+                            className="w-full border rounded p-2"
                         >
                             <option value="SAVINGS">Savings</option>
                             <option value="CURRENT">Current</option>
                         </select>
                     </div>
-                    <div className="mb-6">
-                        <label className="block text-gray-700 font-medium mb-2">Initial Balance</label>
-                        <input
-                            type="text" // Changed from "number" to "text"
-                            value={balance}
-                            onChange={handleBalanceChange}
-                            className={`w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-[#61a8e8]'}`}
-                            placeholder="Minimum balance Rs.1000 is required" // Updated placeholder
-                            required
-                        />
-                        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-                    </div>
-                    <div className="flex justify-end gap-4 mt-6"> {/* 👈 Added mt-6 for spacing */}
-                        {/* Cancel Button */}
-                        <Button
-                            variant="outlined" // 👈 Use outlined style for secondary action
-                            onClick={onClose}
-                        >
+
+                    {message && (
+                        <div className={`p-3 rounded text-center bg-red-100 text-red-700`}>
+                            {message.text}
+                        </div>
+                    )}
+
+                    <div className="flex justify-end space-x-4">
+                        <Button variant="outlined" onClick={onClose} disabled={loading}>
                             Cancel
                         </Button>
-
-                        {/* Submit Button */}
-                        <Button
-                            type="submit"
-                            variant="contained" // 👈 Use contained style for primary action
-                        >
-                            Create Account
+                        <Button type="submit" variant="contained" disabled={loading}>
+                            {loading ? 'Creating...' : 'Create Account'}
                         </Button>
                     </div>
                 </form>

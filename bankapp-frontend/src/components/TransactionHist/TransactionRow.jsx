@@ -20,7 +20,7 @@ const TransactionRow = ({ fromAccount, transactionType, toAccount, amount, times
             <td className="py-2 px-3">{fromAccount}</td>
             <td className="py-2 px-3 font-semibold">{transactionType}</td>
             <td className="py-2 px-3">{toAccount || '-'}</td>
-            <td className={`py-2 px-3 font-semibold ${amountColor}`}>
+            <td className={`py-2 px-3 ${amountColor}`}>
                 {formattedAmount}
             </td>
             <td className="py-2 px-3">{formattedTimestamp}</td>

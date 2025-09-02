@@ -12,6 +12,8 @@ const ManageAccount = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const headerCellStyles = { fontSize: '1.1rem', fontWeight: 'bold' };
+    const bodyCellStyles = { fontSize: '1rem' };
 
     const fetchAccounts = async () => {
         try {
@@ -30,34 +32,32 @@ const ManageAccount = () => {
         try {
             await api.post('/account', accountData);
             fetchAccounts(); // Refresh the accounts list
-            setIsModalOpen(false);
-            alert("Successfully added new account!");
-            // Close the modal
+            setIsModalOpen(false); // Close the creation modal
+            setSuccessMessage("Successfully added new account!"); // Set success message
+            setShowSuccessModal(true); // Show the success modal
         } catch (error) {
             console.error("Failed to add account:", error);
-            // You could add some user-facing error handling here
+            alert(error.response?.data?.message || "Failed to add account.");
         }
     };
 
-    const handleDeleteAccount = async (accountNumber) => {
-        // Show a confirmation dialog before proceeding
-        const isConfirmed = window.confirm("Are you sure you want to delete this account? This action cannot be undone.");
-
-        if (isConfirmed) {
+    const handleDelete = async (accountNumber) => {
+        if (window.confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
             try {
                 await api.delete(`/account/${accountNumber}`);
-                // After successful deletion, refresh the list of accounts
-                fetchAccounts();
+                fetchAccounts(); // Refresh the list
+                setSuccessMessage('Account deleted successfully!');
+                setShowSuccessModal(true); // Show success modal
             } catch (error) {
-                console.error(`Failed to delete account ${accountNumber}:`, error);
-                // Optionally, show an error message to the user
-                alert("Failed to delete account. Please try again.");
+                alert(error.response?.data?.message || 'Failed to delete account.');
             }
         }
     };
 
-    const headerCellStyles = { fontSize: '1.1rem', fontWeight: 'bold' };
-    const bodyCellStyles = { fontSize: '1rem' };
+    const handleCloseSuccessModal = () => {
+        setShowSuccessModal(false);
+        setSuccessMessage('');
+    };
 
     return (
         <div>
@@ -66,13 +66,10 @@ const ManageAccount = () => {
                 <p className='text-xl mt-2.5 mb-8'>Your financial overview at a glance.</p>
             </div>
             <div className="w-full max-w-[1010px] mx-auto mb-5 bg-white border border-gray-300 rounded-xl p-6 shadow-sm">
-
-                {/* Section Title */}
-                <div className="mb-6 text-2xl font-semibold text-[#263d6b] tracking-wide flex items-center gap-2">
-                    All Account List :
+                <div className="mb-6 text-2xl font-semibold text-[#263d6b] tracking-wide flex items-center justify-between">
+                    <span>All Account List :</span>
                 </div>
 
-                {/* Accounts Table */}
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
@@ -99,7 +96,7 @@ const ManageAccount = () => {
                                         <Button
                                             variant="outlined"
                                             color="error"
-                                            onClick={() => handleDeleteAccount(acc.accountNumber)}
+                                            onClick={() => handleDelete(acc.accountNumber)}
                                         >
                                             Delete
                                         </Button>
@@ -109,22 +106,28 @@ const ManageAccount = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-
-                {/* Add Account Button */}
-                <div className="mt-6 mr-6 text-right">
+                <div className='mt-5 justify-end flex'>
                     <Button
-                        variant="contained" onClick={() => setIsModalOpen(true)}
-
+                        variant="contained"
+                        onClick={() => setIsModalOpen(true)}
                     >
                         Add New Account
                     </Button>
                 </div>
+
             </div>
 
             {isModalOpen && (
                 <AddAccountModal
                     onClose={() => setIsModalOpen(false)}
                     onSubmit={handleAddAccount}
+                />
+            )}
+
+            {showSuccessModal && (
+                <SuccessModal
+                    message={successMessage}
+                    onClose={handleCloseSuccessModal}
                 />
             )}
         </div>

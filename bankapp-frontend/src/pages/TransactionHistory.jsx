@@ -76,7 +76,7 @@ const TransactionHistory = () => {
                                 </tr>
                             ) : filteredTransactions.length === 0 ? (
                                 <tr>
-                                    <td colSpan="5" className="text-center py-6 text-gray-400">
+                                    <td colSpan="5" className="text-center text-lg py-18 text-gray-400">
                                         No transactions found.
                                     </td>
                                 </tr>

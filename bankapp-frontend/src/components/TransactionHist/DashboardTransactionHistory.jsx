@@ -3,9 +3,7 @@ import TransactionRow from './TransactionRow';
 import api from "../../api";
 import { Link } from 'react-router-dom';
 
-
 const DashboardTransactionHistory = () => {
-
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -26,13 +24,13 @@ const DashboardTransactionHistory = () => {
         fetchTransactions();
     }, []);
 
-
     return (
         <div className="w-full max-w-[1010px] bg-white border border-gray-300 mb-3 rounded-xl px-10 pt-3.5 pb-3 shadow-sm mx-auto">
             {/* Section Title */}
             <div className="mb-3 text-2xl font-semibold text-[#263d6b] tracking-wide">
                 Transactions History
             </div>
+
             {/* Table */}
             <div className="overflow-x-auto">
                 <table className="min-w-full text-base text-left">
@@ -46,13 +44,22 @@ const DashboardTransactionHistory = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {transactions.slice(0, 4).map((txn) => (
-                            <TransactionRow key={txn.id} {...txn} />
-                        ))}
-
+                        {transactions.length > 0 ? (
+                            transactions.slice(0, 4).map((txn) => (
+                                <TransactionRow key={txn.id} {...txn} />
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="5" className="text-center py-16.5 text-gray-500">
+                                    No transaction history available.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
+
+            {/* Link */}
             <div className="text-right">
                 <Link
                     to="/transactions"
@@ -62,7 +69,7 @@ const DashboardTransactionHistory = () => {
                 </Link>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default DashboardTransactionHistory
+export default DashboardTransactionHistory;

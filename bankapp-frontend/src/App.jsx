@@ -11,8 +11,9 @@ import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { useAuth, AuthProvider } from './auth/AuthContext'
-import { PrivateRoute } from "./routes/guards"
+import { PrivateRoute } from './routes/guards';
 import { Outlet } from "react-router-dom";
+import UserManagement from './pages/UserManagement';
 
 
 function MainLayout() {
@@ -62,6 +63,7 @@ const AppRoutes = () => (
           <Route path="/accounts" element={<ManageAccount />} />
           <Route path="/transfer" element={<Transfer />} />
           <Route path="/transactions" element={<TransactionHistory />} />
+          <Route path="/manage-users" element={<UserManagement />} />
         </Route>
       </Route>
     </Routes>

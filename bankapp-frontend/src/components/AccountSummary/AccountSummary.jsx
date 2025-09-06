@@ -1,34 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import AccountCard from './AccountCard'
+import React from 'react';
+import AccountCard from './AccountCard';
 import api from "../../api";
+import { useNavigate } from 'react-router-dom';
+import { HiPlus } from 'react-icons/hi';
+import { useQuery } from '@tanstack/react-query';
+
+const fetchAndSortAccounts = async () => {
+    const { data } = await api.get('/account');
+    if (!data) return [];
+    return data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+};
 
 const AccountSummary = () => {
-    const [accounts, setAccounts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchAccounts = async () => {
-            try {
-                const response = await api.get('/account');
-                if (response.data) {
-                   const sortedAccounts = response.data.sort((a, b) =>
-                        new Date(b.createdAt) - new Date(a.createdAt)
-                    );
-                    setAccounts(sortedAccounts);
-                }
-            } catch (error) {
-                console.error("Error fetching accounts:", error);
-                setError("Failed to load account information");
-            } finally {
-                setLoading(false);
-            }
-        };
+    const { data: accounts = [], isLoading, isError, error } = useQuery({
+        queryKey: ['accounts'],
+        queryFn: fetchAndSortAccounts,
+    });
 
-        fetchAccounts();
-    }, []);
-
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 py-6 mb-5 shadow-sm mx-auto">
                 <div className="animate-pulse">
@@ -42,24 +33,24 @@ const AccountSummary = () => {
         );
     }
 
-    if (error) {
+    if (isError) {
         return (
             <div className="w-full max-w-[1010px] bg-white border border-red-100 rounded-xl px-10 py-6 mb-5 shadow-sm mx-auto">
-                <div className="text-red-500">{error}</div>
+                <div className="text-red-500">Error: {error.message}</div>
             </div>
         );
     }
 
     return (
-        <>
-            <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 pt-2 pb-5 mb-3 shadow-sm mx-auto">
-                {/* Title */}
-                <div className="mb-2 text-2xl font-semibold text-[#263d6b] tracking-wide">
-                    Accounts
-                </div>
-                {/* Cards Row */}
+        <div className="w-full max-w-[1010px] bg-white border border-gray-300 rounded-xl px-10 pt-2 pb-5 mb-3 shadow-sm mx-auto">
+            {/* Title */}
+            <div className="mb-2 text-2xl font-semibold text-[#263d6b] tracking-wide">
+                Accounts
+            </div>
+            {/* Cards Row */}
+            {accounts.length > 0 ? (
                 <div className="flex justify-between">
-                     {accounts.slice(0, 2).map((account) => (
+                    {accounts.slice(0, 2).map((account) => (
                         <AccountCard
                             key={account.accountNumber}
                             type={account.accountType}
@@ -70,10 +61,19 @@ const AccountSummary = () => {
                         />
                     ))}
                 </div>
-            </div>
-        </>
+            ) : (
+                <div
+                    className="w-[400px] h-[200px] min-w-[200px] rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:border-gray-400 cursor-pointer transition"
+                    onClick={() => navigate('/accounts')}
+                >
+                    <div className="text-center">
+                        <HiPlus className="mx-auto text-4xl" />
+                        <p className="mt-2 font-semibold">Create New Account</p>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
-    )
-}
-
-export default AccountSummary
+export default AccountSummary;

@@ -12,7 +12,23 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const theme = createTheme();
 
 // Create a client
-const queryClient = new QueryClient(); // 👈 Create instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      retry: (failureCount, error) => {
+        if (error?.response?.status === 401) return false;
+        return failureCount < 2;
+      },
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});// 👈 Create instance
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

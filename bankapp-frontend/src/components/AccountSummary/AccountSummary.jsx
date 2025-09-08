@@ -1,9 +1,11 @@
 import React from 'react';
 import AccountCard from './AccountCard';
 import api from "../../api";
+import { useAuth } from '../../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { HiPlus } from 'react-icons/hi';
 import { useQuery } from '@tanstack/react-query';
+
 
 const fetchAndSortAccounts = async () => {
     const { data } = await api.get('/account');
@@ -12,11 +14,13 @@ const fetchAndSortAccounts = async () => {
 };
 
 const AccountSummary = () => {
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const { data: accounts = [], isLoading, isError, error } = useQuery({
-        queryKey: ['accounts'],
+        queryKey: ['accounts', user?.userId], // ✅ Include user ID
         queryFn: fetchAndSortAccounts,
+        enabled: !!user?.userId,
     });
 
     if (isLoading) {

@@ -1,22 +1,28 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { AppBar, Toolbar, Button, Stack } from '@mui/material';
+import LazyImage from '../components/LazyImage';
 
 const LandingPage = () => {
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
             {/* Header */}
             <AppBar position="sticky" color="default" elevation={1} sx={{ backgroundColor: 'white' }}>
-                 <Toolbar 
+                <Toolbar
                     disableGutters // 👈 1. Remove default padding
-                    sx={{ 
-                        justifyContent: 'space-between',  
-                        width: '100%', 
+                    sx={{
+                        justifyContent: 'space-between',
+                        width: '100%',
                         px: 5 // 👈 2. Add your own smaller padding (e.g., 16px)
                     }}
                 >
                     {/* Logo */}
-                    <img src="/images/aurabank-logo.png" alt="AuraBank Logo" style={{ width: 160 }} />
+                    <LazyImage
+                        src="/images/aurabank-logo.png"
+                        alt="AuraBank Logo"
+                        className="w-40 h-auto"
+                        placeholder={true}
+                    />
 
                     {/* Desktop Navigation */}
                     <Stack

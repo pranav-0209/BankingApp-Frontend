@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import api from '../api';
-import { TextField, Button, Stack } from '@mui/material'; // 👈 Import MUI components
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';// 👈 Import MUI components
 
 const Signup = () => {
   const navigate = useNavigate();

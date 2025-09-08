@@ -1,20 +1,28 @@
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import './App.css'
 import Sidebar from './components/Sidebar/Sidebar'
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
-import ManageAccount from './pages/ManageAccount';
-import Transfer from "./pages/Transfer";
-import DashBoard from "./pages/DashBoard";
-import TransactionHistory from "./pages/TransactionHistory";
+// import ManageAccount from './pages/ManageAccount';
+// import Transfer from "./pages/Transfer";
+// import DashBoard from "./pages/DashBoard";
+// import TransactionHistory from "./pages/TransactionHistory";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { useAuth, AuthProvider } from './auth/AuthContext'
 import { PrivateRoute } from './routes/guards';
 import { Outlet } from "react-router-dom";
-import UserManagement from './pages/UserManagement';
+// import UserManagement from './pages/UserManagement';
+import LoadingSpinner from './components/LoadingSpinner';
 
+
+const DashBoard = lazy(() => import("./pages/DashBoard"));
+const Transfer = lazy(() => import("./pages/Transfer"));
+const TransactionHistory = lazy(() => import("./pages/TransactionHistory"));
+const ManageAccount = lazy(() => import("./pages/ManageAccount"));
+const UserManagement = lazy(() => import("./pages/UserManagement"));
 
 function MainLayout() {
 
@@ -59,11 +67,21 @@ const AppRoutes = () => (
       {/* Protected app routes */}
       <Route element={<PrivateRoute />}>
         <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<DashBoard />} />
-          <Route path="/accounts" element={<ManageAccount />} />
-          <Route path="/transfer" element={<Transfer />} />
-          <Route path="/transactions" element={<TransactionHistory />} />
-          <Route path="/manage-users" element={<UserManagement />} />
+          <Route path="/dashboard" element={<Suspense fallback={<LoadingSpinner />}>
+            <DashBoard />
+          </Suspense>} />
+          <Route path="/accounts" element={<Suspense fallback={<LoadingSpinner />}>
+            <ManageAccount />
+          </Suspense>} />
+          <Route path="/transfer" element={<Suspense fallback={<LoadingSpinner />}>
+            <Transfer />
+          </Suspense>} />
+          <Route path="/transactions" element={<Suspense fallback={<LoadingSpinner />}>
+            <TransactionHistory />
+          </Suspense>} />
+          <Route path="/manage-users" element={<Suspense fallback={<LoadingSpinner />}>
+            <UserManagement />
+          </Suspense>} />
         </Route>
       </Route>
     </Routes>

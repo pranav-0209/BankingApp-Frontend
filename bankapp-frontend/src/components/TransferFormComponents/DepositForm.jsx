@@ -1,69 +1,102 @@
-import React, { useState } from 'react';
+import { useCallback,useState, useMemo, memo } from 'react';
 import api from '../../api';
 import { Button } from '@mui/material';
 import SuccessModal from '../SuccessModal';
+import * as yup from 'yup';
 
-const DepositForm = ({ accounts, onTransactionSuccess }) => {
-    const [selectedAccount, setSelectedAccount] = useState(accounts[0]?.accountNumber || '');
-    const [amount, setAmount] = useState('');
-    const [loading, setLoading] = useState(false);
-    // Standardize the message state to always be an object or null
-    const [message, setMessage] = useState(null);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!selectedAccount || !amount || parseFloat(amount) <= 0) {
-            setMessage({ type: 'error', text: 'Please select an account and enter a valid amount.' });
-            return;
-        }
+const depositSchema = yup.object({
+  selectedAccount: yup.string().required('Account is required'),
+  amount: yup.number().positive().min(1, 'Minimum amount is ₹1').required('Amount is required'),
+});
 
-        setLoading(true);
-        setMessage(null); // Clear previous messages
+const DepositForm = memo(({ accounts, onTransactionSuccess }) => {
+  const [selectedAccount, setSelectedAccount] = useState(accounts[0]?.accountNumber || '');
+  const [amount, setAmount] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-        try {
-            await api.post('/transaction/deposit', {
-                account: selectedAccount,
-                transactionType: 'DEPOSIT',
-                amount: parseFloat(amount)
-            });
+  const accountOptions = useMemo(() => 
+    accounts.map(acc => ({
+      value: acc.accountNumber,
+      label: `${acc.accountType} - ${acc.accountNumber} (Balance: ₹${acc.balance.toLocaleString()})`
+    })),
+    [accounts]
+  );
 
-            // Call the success callback to update parent component's state
-            onTransactionSuccess(selectedAccount);
-            setShowSuccessModal(true); // Show the modal on success
-            setAmount(''); // Reset the amount input
-            // Correctly reset the selected account if needed, or remove if not desired
-            setSelectedAccount(accounts[0]?.accountNumber || '');
+  const handleAccountChange = useCallback((e) => {
+    setSelectedAccount(e.target.value);
+    if (message) setMessage(null);
+  }, [message]);
 
-        } catch (error) {
-            setMessage({ type: 'error', text: error.response?.data?.message || 'Deposit failed.' });
-        } finally {
-            setLoading(false);
-        }
+  const handleAmountChange = useCallback((e) => {
+    setAmount(e.target.value);
+    if (message) setMessage(null);
+  }, [message]);
+
+  const validateForm = useCallback(async () => {
+    try {
+      await depositSchema.validate({ selectedAccount, amount: parseFloat(amount) });
+      return true;
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message });
+      return false;
     }
+  }, [selectedAccount, amount]);
 
-    const handleCloseModal = () => {
-        setShowSuccessModal(false);
-    };
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    if (loading) return;
 
-    return (
+    const isValid = await validateForm();
+    if (!isValid) return;
+
+    setLoading(true);
+    setMessage(null);
+
+    try {
+      await api.post('/transaction/deposit', {
+        account: selectedAccount,
+        transactionType: 'DEPOSIT',
+        amount: parseFloat(amount)
+      });
+
+      onTransactionSuccess(selectedAccount);
+      setShowSuccessModal(true);
+      setAmount('');
+    } catch (error) {
+      setMessage({ 
+        type: 'error', 
+        text: error.response?.data?.message || 'Deposit failed.' 
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, validateForm, selectedAccount, amount, onTransactionSuccess]);
+
+  const handleCloseModal = useCallback(() => {
+    setShowSuccessModal(false);
+  }, []);
+
+  return (
+    <div>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-                <div>
-                    <label className="block font-semibold mb-1">Deposit To:</label>
-                    <select
-                        className="w-full font-medium border rounded p-2"
-                        value={selectedAccount}
-                        onChange={(e) => setSelectedAccount(e.target.value)}
-                    >
-                        <option value="" disabled>Select your account</option>
-                        {accounts.map(acc => (
-                            <option key={acc.accountNumber} value={acc.accountNumber}>
-                                {acc.accountType} - {acc.accountNumber} (Balance: ₹{acc.balance.toLocaleString()})
-                            </option>
-                        ))}
-                    </select>
-                </div>
+          <label className="block font-semibold mb-1">Deposit To:</label>
+          <select
+            className="w-full font-medium border rounded p-2"
+            value={selectedAccount}
+            onChange={handleAccountChange}
+          >
+            <option value="" disabled>Select your account</option>
+            {accountOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
                 <div>
                     <label className="block font-semibold mb-1">Amount:</label>
                     <input
@@ -93,13 +126,13 @@ const DepositForm = ({ accounts, onTransactionSuccess }) => {
             </form>
 
             {showSuccessModal && (
-                <SuccessModal
-                    message="Deposit was completed successfully!"
-                    onClose={handleCloseModal}
-                />
-            )}
-        </div>
-    );
-}
+        <SuccessModal
+          message="Deposit was completed successfully!"
+          onClose={handleCloseModal}
+        />
+      )}
+    </div>
+  );
+});
 
 export default DepositForm;

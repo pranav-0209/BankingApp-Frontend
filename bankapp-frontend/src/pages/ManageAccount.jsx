@@ -9,12 +9,15 @@ import AddAccountModal from '../components/AddAccountModal';
 import api from '../api';
 import SuccessModal from '../components/SuccessModal';
 import { HiPlus } from 'react-icons/hi';
+import AnimatedDeleteModal from '../components/AnimatedDeleteModal';
 
 const ManageAccount = () => {
     const [accounts, setAccounts] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Add this state
+    const [selectedAccount, setSelectedAccount] = useState(null);
     const headerCellStyles = { fontSize: '1.1rem', fontWeight: 'bold' };
     const bodyCellStyles = { fontSize: '1rem' };
 
@@ -44,17 +47,25 @@ const ManageAccount = () => {
         }
     };
 
-    const handleDelete = async (accountNumber) => {
-        if (window.confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
-            try {
-                await api.delete(`/account/${accountNumber}`);
-                fetchAccounts();
-                setSuccessMessage('Account deleted successfully!');
-                setShowSuccessModal(true);
-            } catch (error) {
-                alert(error.response?.data?.message || 'Failed to delete account.');
-            }
+    const handleDeleteClick = (account) => {
+        setSelectedAccount(account);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        try {
+            await api.delete(`/account/${selectedAccount.accountNumber}`);
+            fetchAccounts();
+            setSuccessMessage('Account deleted successfully!');
+            setShowSuccessModal(true);
+        } catch (error) {
+            alert(error.response?.data?.message || 'Failed to delete account.');
         }
+    };
+
+    const handleDeleteModalClose = () => {
+        setIsDeleteModalOpen(false);
+        setSelectedAccount(null);
     };
 
     const handleCloseSuccessModal = () => {
@@ -103,7 +114,7 @@ const ManageAccount = () => {
                                                 <Button
                                                     variant="outlined"
                                                     color="error"
-                                                    onClick={() => handleDelete(acc.accountNumber)}
+                                                    onClick={() => handleDeleteClick(acc)}
                                                 >
                                                     Delete
                                                 </Button>
@@ -156,6 +167,13 @@ const ManageAccount = () => {
                     onClose={handleCloseSuccessModal}
                 />
             )}
+            <AnimatedDeleteModal
+                isOpen={isDeleteModalOpen}
+                onClose={handleDeleteModalClose}
+                onConfirm={handleDeleteConfirm}
+                itemType="account"
+                itemIdentifier={selectedAccount ? selectedAccount.accountNumber : ''}
+            />
         </div>
     );
 };

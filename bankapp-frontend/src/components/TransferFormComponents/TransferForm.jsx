@@ -1,63 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import api from '../../api';
 import { Button } from '@mui/material';
 import SuccessModal from '../SuccessModal';
 
-const TransferForm = ({ accounts, onTransactionSuccess }) => {
+const TransferForm = memo(({ accounts, onTransactionSuccess }) => {
     const [fromAccount, setFromAccount] = useState(accounts[0]?.accountNumber || '');
     const [toAccount, setToAccount] = useState('');
     const [amount, setAmount] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
         const fromAccDetails = accounts.find(acc => acc.accountNumber === fromAccount);
 
+        // Reset any previous error messages
+        setMessage(null);
+
+        // Basic validation checks
         if (!fromAccount || !toAccount || !amount || parseFloat(amount) <= 0) {
-            setMessage({ type: 'error', text: 'Please fill all fields with valid information.' });
+            setMessage({ 
+                type: 'error', 
+                text: 'Please fill all fields with valid information.' 
+            });
             return;
         }
 
         if (fromAccount === toAccount) {
-            setMessage({ type: 'error', text: 'Cannot transfer money to the same account.' });
+            setMessage({ 
+                type: 'error', 
+                text: 'Cannot transfer money to the same account.' 
+            });
             return;
         }
 
         if (fromAccDetails && fromAccDetails.balance < parseFloat(amount)) {
-            setMessage({ type: 'error', text: 'Insufficient funds for this transfer.' });
+            setMessage({ 
+                type: 'error', 
+                text: 'Insufficient funds for this transfer.' 
+            });
             return;
         }
 
         setLoading(true);
-        setMessage(null);
 
         try {
-            await api.post('/transaction/transfer', {
+            const response = await api.post('/transaction/transfer', {
                 account: fromAccount,
                 toAccount: toAccount,
                 amount: parseFloat(amount),
                 transactionType: 'TRANSFER'
             });
+            
+            console.log('Transfer Success:', {
+                status: response.status,
+                data: response.data,
+                fromAccount,
+                toAccount,
+                amount: parseFloat(amount)
+            });
 
-            onTransactionSuccess(fromAccount); // Refresh balance for both accounts
+            onTransactionSuccess(fromAccount);
             onTransactionSuccess(toAccount);
-            setShowSuccessModal(true);
-            setAmount(''); // Reset form fields
+            setModalOpen(true);
+            setAmount('');
             setToAccount('');
             setFromAccount(accounts[0]?.accountNumber || '');
 
         } catch (error) {
-            setMessage({ type: 'error', text: error.response?.data?.message || 'Transfer failed.' });
+            console.error('Transfer Error:', error);
+            
+            // Handle specific error cases
+            const errorMessage = error.response?.data?.message;
+            
+            // Check if the error message contains information about the recipient account
+            if (errorMessage?.includes(toAccount)) {
+                setMessage({ 
+                    type: 'error', 
+                    text: `Recipient account ${toAccount} not found.` 
+                });
+            } else {
+                setMessage({ 
+                    type: 'error', 
+                    text: errorMessage || 'Transfer failed. Please try again.' 
+                });
+            }
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleCloseModal = () => {
-        setShowSuccessModal(false);
-    };
+    }, [fromAccount, toAccount, amount, accounts, onTransactionSuccess]);
 
     return (
         <div>
@@ -114,14 +146,13 @@ const TransferForm = ({ accounts, onTransactionSuccess }) => {
                 </Button>
             </form>
 
-            {showSuccessModal && (
-                <SuccessModal
-                    message="Transfer was completed successfully!"
-                    onClose={handleCloseModal}
-                />
-            )}
+            <SuccessModal
+                open={modalOpen}
+                message="Transfer was completed successfully!"
+                onClose={() => setModalOpen(false)}
+            />
         </div>
     );
-};
+});
 
 export default TransferForm;

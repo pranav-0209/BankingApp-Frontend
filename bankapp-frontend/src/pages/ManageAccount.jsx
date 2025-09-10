@@ -1,18 +1,22 @@
-// In src/pages/ManageAccount.jsx
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Paper, Button
 } from '@mui/material';
 import AddAccountModal from '../components/AddAccountModal';
+import { useAccounts } from '../hooks/useAccountQueries';
 import api from '../api';
 import SuccessModal from '../components/SuccessModal';
 import { HiPlus } from 'react-icons/hi';
 import AnimatedDeleteModal from '../components/AnimatedDeleteModal';
+import { useQueryClient } from '@tanstack/react-query'; // Add this import
+import { useAuth } from '../auth/AuthContext';
 
 const ManageAccount = () => {
-    const [accounts, setAccounts] = useState([]);
+    const { user } = useAuth();
+    const queryClient = useQueryClient();
+    const { data: accounts = [] } = useAccounts(user?.userId);
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
@@ -21,23 +25,10 @@ const ManageAccount = () => {
     const headerCellStyles = { fontSize: '1.1rem', fontWeight: 'bold' };
     const bodyCellStyles = { fontSize: '1rem' };
 
-    const fetchAccounts = async () => {
-        try {
-            const response = await api.get('/account');
-            setAccounts(response.data);
-        } catch (error) {
-            console.error("Failed to fetch accounts:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchAccounts();
-    }, []);
-
     const handleAddAccount = async (accountData) => {
         try {
             await api.post('/account', accountData);
-            fetchAccounts();
+            await queryClient.invalidateQueries(['accounts']); // Add this line
             setIsModalOpen(false);
             setSuccessMessage("Successfully added new account!");
             setShowSuccessModal(true);
@@ -55,7 +46,7 @@ const ManageAccount = () => {
     const handleDeleteConfirm = async () => {
         try {
             await api.delete(`/account/${selectedAccount.accountNumber}`);
-            fetchAccounts();
+            await queryClient.invalidateQueries(['accounts']); // Add this line
             setSuccessMessage('Account deleted successfully!');
             setShowSuccessModal(true);
         } catch (error) {
@@ -154,25 +145,23 @@ const ManageAccount = () => {
                 )}
             </div>
 
-            {isModalOpen && (
-                <AddAccountModal
-                    onClose={() => setIsModalOpen(false)}
-                    onSubmit={handleAddAccount}
-                />
-            )}
+            <AddAccountModal
+                isOpen={isModalOpen} // Changed to pass as a prop
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleAddAccount}
+            />
 
-            {showSuccessModal && (
-                <SuccessModal
-                    message={successMessage}
-                    onClose={handleCloseSuccessModal}
-                />
-            )}
+            <SuccessModal
+                open={showSuccessModal}
+                message={successMessage}
+                onClose={handleCloseSuccessModal}
+            />
+            
             <AnimatedDeleteModal
                 isOpen={isDeleteModalOpen}
                 onClose={handleDeleteModalClose}
                 onConfirm={handleDeleteConfirm}
-                itemType="account"
-                itemIdentifier={selectedAccount ? selectedAccount.accountNumber : ''}
+                accountDetails={selectedAccount}
             />
         </div>
     );

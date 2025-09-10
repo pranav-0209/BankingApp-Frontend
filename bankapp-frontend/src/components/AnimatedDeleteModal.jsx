@@ -71,7 +71,7 @@ const AnimatedDeleteModal = ({ isOpen, onClose, onConfirm, accountDetails }) => 
             <div className="bg-red-50 rounded-lg p-4 text-left">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700">Account Type:</span>
-                <span className="text-sm font-bold text-red-600">{accountDetails?.accountType}</span>
+                <span className="text-sm font-bold ">{accountDetails?.accountType}</span>
               </div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700">Account Number:</span>
@@ -79,7 +79,7 @@ const AnimatedDeleteModal = ({ isOpen, onClose, onConfirm, accountDetails }) => 
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700">Balance:</span>
-                <span className="text-sm font-bold text-red-600">
+                <span className="text-sm font-bold text-green-600">
                   ₹{Number(accountDetails?.balance || 0).toLocaleString()}
                 </span>
               </div>

@@ -1,4 +1,4 @@
-import { useCallback,useState, useMemo, memo } from 'react';
+import { useCallback, useState, useMemo, memo } from 'react';
 import api from '../../api';
 import { Button } from '@mui/material';
 import SuccessModal from '../SuccessModal';
@@ -15,9 +15,10 @@ const DepositForm = memo(({ accounts, onTransactionSuccess }) => {
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  // const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const accountOptions = useMemo(() => 
+  const accountOptions = useMemo(() =>
     accounts.map(acc => ({
       value: acc.accountNumber,
       label: `${acc.accountType} - ${acc.accountNumber} (Balance: ₹${acc.balance.toLocaleString()})`
@@ -63,12 +64,12 @@ const DepositForm = memo(({ accounts, onTransactionSuccess }) => {
       });
 
       onTransactionSuccess(selectedAccount);
-      setShowSuccessModal(true);
+      setModalOpen(true);
       setAmount('');
     } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: error.response?.data?.message || 'Deposit failed.' 
+      setMessage({
+        type: 'error',
+        text: error.response?.data?.message || 'Deposit failed.'
       });
     } finally {
       setLoading(false);
@@ -97,40 +98,39 @@ const DepositForm = memo(({ accounts, onTransactionSuccess }) => {
             ))}
           </select>
         </div>
-                <div>
-                    <label className="block font-semibold mb-1">Amount:</label>
-                    <input
-                        type="number"
-                        className="w-full border rounded p-2"
-                        placeholder="Enter amount"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                    />
-                </div>
-                {/* Single, consistent message display area */}
-                {message && (
-                    <div className={`p-3 rounded text-center ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                        {message.text}
-                    </div>
-                )}
-                <Button
-                    type="submit"
-                    variant="contained"
-                    size="large"
-                    fullWidth // Make button take full width for better UI
-                    disabled={loading}
-                    style={{ marginTop: '1rem' }} // Add some margin
-                >
-                    {loading ? 'Processing...' : 'Confirm Deposit'}
-                </Button>
-            </form>
+        <div>
+          <label className="block font-semibold mb-1">Amount:</label>
+          <input
+            type="number"
+            className="w-full border rounded p-2"
+            placeholder="Enter amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        </div>
+        {/* Single, consistent message display area */}
+        {message && (
+          <div className={`p-3 rounded text-center ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+            {message.text}
+          </div>
+        )}
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          fullWidth // Make button take full width for better UI
+          disabled={loading}
+          style={{ marginTop: '1rem' }} // Add some margin
+        >
+          {loading ? 'Processing...' : 'Confirm Deposit'}
+        </Button>
+      </form>
 
-            {showSuccessModal && (
-        <SuccessModal
-          message="Deposit was completed successfully!"
-          onClose={handleCloseModal}
-        />
-      )}
+      <SuccessModal
+        open={modalOpen}
+        message="Deposit completed successfully!"
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
 });

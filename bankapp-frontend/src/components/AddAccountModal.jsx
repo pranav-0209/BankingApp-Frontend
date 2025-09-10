@@ -1,10 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@mui/material';
 
-const AddAccountModal = ({ onClose, onSubmit }) => {
+const AddAccountModal = ({ isOpen, onClose, onSubmit }) => {
     const [accountType, setAccountType] = useState('SAVINGS');
     const [balance, setBalance] = useState('');
     const [error, setError] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    useEffect(() => {
+        if (isOpen) {
+            // When opening, first make the component visible.
+            setIsVisible(true);
+            // Then, after a tiny delay, trigger the animation.
+            const enterTimeout = setTimeout(() => setIsAnimating(true), 10);
+            return () => clearTimeout(enterTimeout);
+        } else {
+            // When closing, first trigger the exit animation.
+            setIsAnimating(false);
+            // Then, after the animation duration (300ms), unmount the component from the DOM.
+            const exitTimeout = setTimeout(() => setIsVisible(false), 300);
+            return () => clearTimeout(exitTimeout);
+        }
+    }, [isOpen]);
+
+    if (!isVisible) return null;
+
+    const handleBackdropClick = (e) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
 
     const handleBalanceChange = (e) => {
         const value = e.target.value;
@@ -23,13 +49,20 @@ const AddAccountModal = ({ onClose, onSubmit }) => {
             return;
         }
 
-        // Pass the data up to the parent component to handle the API call
         onSubmit({ accountType, balance: finalBalance });
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-            <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+        <div
+            className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${isAnimating ? 'bg-black/50' : 'bg-black/0'
+                }`}
+            onClick={handleBackdropClick}
+        >
+            <div
+                className={`bg-white p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all duration-300 ${isAnimating ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+                    }`}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <h2 className="text-2xl font-semibold mb-6 text-[#263d6b]">Add New Account</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">

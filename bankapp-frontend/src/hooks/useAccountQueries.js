@@ -2,14 +2,18 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../api';
 
-export const useAccounts = () => {
-  return useQuery({
-    queryKey: ['accounts'],
-    queryFn: async () => {
-      const { data } = await api.get('/account');
-      return data?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) || [];
-    },
-  });
+export const fetchAndSortAccounts = async () => {
+    const { data } = await api.get('/account');
+    if (!data) return [];
+    return data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+};
+
+export const useAccounts = (userId) => {
+    return useQuery({
+        queryKey: ['accounts', userId],
+        queryFn: fetchAndSortAccounts,
+        enabled: !!userId,
+    });
 };
 
 export const useAccountBalance = (accountNumber) => {

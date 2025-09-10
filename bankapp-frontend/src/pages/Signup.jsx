@@ -3,11 +3,13 @@ import { useNavigate, Link } from "react-router-dom";
 import api from '../api';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Stack from '@mui/material/Stack';// 👈 Import MUI components
+import Stack from '@mui/material/Stack';
+import SuccessModal from '../components/SuccessModal'; // Import the modal
 
 const Signup = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', phoneNumber: '', password: '' });
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -15,11 +17,15 @@ const Signup = () => {
     e.preventDefault();
     try {
       await api.post('/auth/signup', form);
-      alert('Signup successful!');
-      navigate('/login');
+      setModalOpen(true); // Show modal on success
     } catch (error) {
       alert(error.response?.data?.message || 'Signup failed!');
     }
+  };
+
+  const handleGoToLogin = () => {
+    setModalOpen(false);
+    navigate('/login');
   };
 
   return (
@@ -35,7 +41,7 @@ const Signup = () => {
           <h2 className="text-3xl font-semibold mb-2">Account Signup</h2>
           <p className="text-gray-500 mb-6">Join us for a seamless banking experience.</p>
           <form onSubmit={handleSignup}>
-            <Stack spacing={2}> {/* 👈 Use Stack for spacing */}
+            <Stack spacing={2}>
               <TextField
                 label="Full Name"
                 name="name"
@@ -85,6 +91,26 @@ const Signup = () => {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <SuccessModal
+        open={modalOpen}
+        message={
+          <div>
+            Registration successful!<br />
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 3 }}
+              onClick={handleGoToLogin}
+              fullWidth
+            >
+              Go to Login
+            </Button>
+          </div>
+        }
+        onClose={() => setModalOpen(false)}
+      />
     </div>
   );
 }

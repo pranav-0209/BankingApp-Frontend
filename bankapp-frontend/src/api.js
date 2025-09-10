@@ -1,5 +1,18 @@
 import axios from "axios";
-import { getToken } from "./auth/token";
+import { getToken, clearToken } from "./auth/token";
+
+// A variable to hold the callback function to be executed on a 401 error.
+// This allows the API module to be separate from the React component tree.
+let onSessionExpiredCallback = null;
+
+/**
+ * Sets the callback function to be executed when a 401 (Unauthorized) error occurs.
+ * This callback should handle displaying the modal and any necessary navigation.
+ * @param {Function} handler The function to call on session expiration.
+ */
+export const setOnSessionExpiredHandler = (handler) => {
+    onSessionExpiredCallback = handler;
+};
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -24,13 +37,21 @@ api.interceptors.request.use(
     }
 );
 
-// Response interceptor
+// Response interceptor to handle session expiration
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            clearToken(); // Clear invalid token
-            window.location.href = '/login';
+            // Clear invalid token from storage
+            clearToken();
+
+            // Check if the callback function has been set and execute it
+            if (onSessionExpiredCallback) {
+                onSessionExpiredCallback();
+            }
+            
+            // Return a rejected promise to prevent further execution
+            return Promise.reject(error);
         }
         return Promise.reject(error);
     }

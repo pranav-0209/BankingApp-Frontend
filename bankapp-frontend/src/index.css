@@ -74,3 +74,16 @@ body::-webkit-scrollbar-thumb {
                      var(--sb-track-color);
   }
 }
+
+@keyframes shine {
+  from {
+    transform: translateX(-100%) skewX(-45deg);
+  }
+  to {
+    transform: translateX(200%) skewX(-45deg);
+  }
+}
+
+.animate-shine {
+  animation: shine 8s infinite;
+}

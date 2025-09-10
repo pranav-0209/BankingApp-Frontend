@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
-import api from '../../api';
+import React, { useState, useCallback, memo } from 'react';
 import { Button } from '@mui/material';
+import api from '../../api';
 import SuccessModal from '../SuccessModal';
 
-const WithDrawForm = ({ accounts, onTransactionSuccess }) => {
+const WithdrawForm = memo(({ accounts, onTransactionSuccess }) => {
     const [selectedAccount, setSelectedAccount] = useState(accounts[0]?.accountNumber || '');
     const [amount, setAmount] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
-        const selectedAccDetails = accounts.find(acc => acc.accountNumber === selectedAccount);
+        const account = accounts.find(acc => acc.accountNumber === selectedAccount);
 
         if (!selectedAccount || !amount || parseFloat(amount) <= 0) {
-            setMessage({ type: 'error', text: 'Please select an account and enter a valid amount.' });
+            setMessage({ type: 'error', text: 'Please fill all fields with valid information.' });
             return;
         }
 
-        if (selectedAccDetails && selectedAccDetails.balance < parseFloat(amount)) {
+        if (account && account.balance < parseFloat(amount)) {
             setMessage({ type: 'error', text: 'Insufficient funds for this withdrawal.' });
             return;
         }
@@ -35,20 +35,18 @@ const WithDrawForm = ({ accounts, onTransactionSuccess }) => {
             });
 
             onTransactionSuccess(selectedAccount);
-            setShowSuccessModal(true);
-            setAmount(''); // Reset amount after success
-            setSelectedAccount(accounts[0]?.accountNumber || ''); // Reset account selection
-
+            setModalOpen(true);
+            setAmount('');
+            setSelectedAccount(accounts[0]?.accountNumber || '');
         } catch (error) {
-            setMessage({ type: 'error', text: error.response?.data?.message || 'Withdrawal failed.' });
+            setMessage({ 
+                type: 'error', 
+                text: error.response?.data?.message || 'Withdrawal failed.' 
+            });
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleCloseModal = () => {
-        setShowSuccessModal(false);
-    };
+    }, [selectedAccount, amount, accounts, onTransactionSuccess]);
 
     return (
         <div>
@@ -95,14 +93,13 @@ const WithDrawForm = ({ accounts, onTransactionSuccess }) => {
                 </Button>
             </form>
 
-            {showSuccessModal && (
-                <SuccessModal
-                    message="Withdrawal was completed successfully!"
-                    onClose={handleCloseModal}
-                />
-            )}
+            <SuccessModal
+                open={modalOpen}
+                message="Withdrawal was completed successfully!"
+                onClose={() => setModalOpen(false)}
+            />
         </div>
     );
-};
+});
 
-export default WithDrawForm;
+export default WithdrawForm;

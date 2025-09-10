@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { HiBell } from 'react-icons/hi';
-import { HiArrowLeft } from "react-icons/hi";
+import { HiBell, HiArrowLeft, HiOutlineLogout, HiOutlineUser } from 'react-icons/hi';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../auth/AuthContext';
 
 const Header = ({ variant = "default", title = "" }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   // Helper function to get user initials
   const getInitials = (name) => {
@@ -24,64 +25,95 @@ const Header = ({ variant = "default", title = "" }) => {
     return fullName.split(" ")[0];
   };
 
-  if (variant === "manageAccounts" || variant === "transfer" || variant === "transactions") {
-    return (
-      <header className="flex items-center justify-between px-10 py-4 bg-white rounded-b-lg shadow-sm mb-8">
-        {/* Back Button + Title */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-1 pl-1.5 pr-2 py-0.5 outline-2 rounded-l-lg outline-offset-0  text-white font-thin bg-[#2872c9] hover:bg-[#2872c9] cursor-pointer"
+  const ProfileMenu = () => (
+    <AnimatePresence>
+      {showProfileMenu && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="absolute right-0 top-16 w-48 bg-white rounded-lg shadow-lg py-2 z-50"
+        >
+          <button 
+            onClick={() => navigate('/profile')}
+            className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 transition-colors"
           >
-            <HiArrowLeft className="text-xl" />
-            <span className='text-xl pb-0.5'>Back</span>
+            <HiOutlineUser className="mr-2" />
+            Profile
           </button>
-        </div>
-        <div className="flex items-center gap-6">
-          {/* Notification Icon */}
-          <button className="relative bg-blue-50 p-2.5 rounded-full hover:bg-blue-100 transition">
-            <HiBell className="text-xl text-[#2872c9]" />
-            {/* Notification dot */}
-            <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border-2 border-white" />
+          <button 
+            onClick={logout}
+            className="w-full flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
+          >
+            <HiOutlineLogout className="mr-2" />
+            Logout
           </button>
-          {/* User Avatar */}
-          <div className="h-12 w-12 bg-[#99CCFF] rounded-full flex items-center justify-center border-2 border-white shadow">
-            <span className="text-[#263d6b] text-xl font-bold">{getInitials(user?.name)}</span>
-            {/* Replace above with an <img /> if you have a profile pic */}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
+  const RightSection = () => (
+    <div className="flex items-center">
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="h-12 w-12 bg-gradient-to-br from-[#99CCFF] to-[#2872c9] rounded-full flex items-center justify-center border-2 border-white shadow-md"
+      >
+        <span className="text-white text-xl font-bold">{getInitials(user?.name)}</span>
+      </motion.div>
+    </div>
+  );
+
+  const HeaderContent = () => {
+    if (variant === "manageAccounts" || variant === "transfer" || variant === "transactions") {
+      return (
+        <motion.header 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="flex items-center justify-between px-10 py-4 bg-white rounded-b-lg shadow-sm mb-8"
+        >
+          <div className="flex items-center gap-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/dashboard")}
+              className="flex items-center gap-1 px-4 py-2 rounded-lg text-white bg-[#2872c9] hover:bg-[#2065b9] transition-colors"
+            >
+              <HiArrowLeft className="text-xl" />
+              <span className="font-medium">Back</span>
+            </motion.button>
+            <h1 className="text-xl font-semibold text-[#263d6b]">{title}</h1>
           </div>
-        </div>
-      </header>
+          <RightSection />
+        </motion.header>
+      );
+    }
+
+    return (
+      <motion.header 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="flex items-center justify-between px-10 py-3 bg-white rounded-b-lg shadow-sm mb-3"
+      >
+        <motion.div
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="text-2xl font-semibold text-[#263d6b]">
+            Welcome back,
+          </div>
+          <div className="text-lg text-[#2872c9] font-medium">
+            {user?.name || "Guest"}
+          </div>
+        </motion.div>
+        <RightSection />
+      </motion.header>
     );
-  }
+  };
 
-  return (
-    <header className="flex items-center justify-between px-10 py-3 bg-white rounded-b-lg shadow-sm mb-3">
-      {/* Greeting */}
-      <div>
-        <div className="text-2xl font-semibold text-[#263d6b]">
-          Welcome back,
-        </div>
-        <div className="text-lg text-[#2872c9] font-medium">
-          {user?.name || "Guest"}
-        </div>
-      </div>
+  return <HeaderContent />;
+};
 
-      {/* Right section: notification + profile */}
-      <div className="flex items-center gap-6">
-        {/* Notification Icon */}
-        <button className="relative bg-blue-50 p-2.5 rounded-full hover:bg-blue-100 transition">
-          <HiBell className="text-xl text-[#2872c9]" />
-          {/* Notification dot */}
-          <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border-2 border-white" />
-        </button>
-        {/* User Avatar */}
-        <div className="h-12 w-12 bg-[#c1e0ff] rounded-full flex items-center justify-center border-2 border-white shadow">
-          <span className="text-[#263d6b] text-xl font-bold">{getInitials(user?.name)}</span>
-          {/* Replace above with an <img /> if you have a profile pic */}
-        </div>
-      </div>
-    </header>
-  )
-}
-
-export default Header
+export default Header;

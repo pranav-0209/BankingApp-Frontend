@@ -16,7 +16,8 @@ import { PrivateRoute } from './routes/guards';
 import { Outlet } from "react-router-dom";
 // import UserManagement from './pages/UserManagement';
 import LoadingSpinner from './components/LoadingSpinner';
-
+import SessionExpiredModal from './components/SessionExpiredModal';
+import { useSessionExpired } from './hooks/useSessionExpired';
 
 const DashBoard = lazy(() => import("./pages/DashBoard"));
 const Transfer = lazy(() => import("./pages/Transfer"));
@@ -90,8 +91,16 @@ const AppRoutes = () => (
 
 
 export default function App() {
+  const { isSessionExpiredOpen, handleModalClose } = useSessionExpired();
+
   return (
-    <AppRoutes />
+    <>
+      <AppRoutes />
+      <SessionExpiredModal 
+        isOpen={isSessionExpiredOpen} 
+        onClose={handleModalClose} 
+      />
+    </>
   );
 }
 

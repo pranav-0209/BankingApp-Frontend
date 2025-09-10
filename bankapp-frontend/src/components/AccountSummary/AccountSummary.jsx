@@ -5,6 +5,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { HiPlus } from 'react-icons/hi';
 import { useQuery } from '@tanstack/react-query';
+import { useAccounts } from '../../hooks/useAccountQueries';
 
 
 const fetchAndSortAccounts = async () => {
@@ -17,11 +18,7 @@ const AccountSummary = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    const { data: accounts = [], isLoading, isError, error } = useQuery({
-        queryKey: ['accounts', user?.userId], // ✅ Include user ID
-        queryFn: fetchAndSortAccounts,
-        enabled: !!user?.userId,
-    });
+    const { data: accounts = [], isLoading, isError, error } = useAccounts(user?.userId);
 
     if (isLoading) {
         return (
@@ -60,8 +57,6 @@ const AccountSummary = () => {
                             type={account.accountType}
                             accountNumber={account.accountNumber}
                             balance={account.balance}
-                            bgColor={account.accountType === 'CURRENT' ? '#4F709C' : '#213555'}
-                            textColor="#F1EFEF"
                         />
                     ))}
                 </div>
